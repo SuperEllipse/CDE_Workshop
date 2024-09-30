@@ -1,0 +1,2 @@
+
+cde airflow submit TestHTTPOperator.py  --config-profile spark-330

@@ -12,13 +12,18 @@ curl -H "Authorization: Bearer ${CDE_TOKEN}" -X PUT "${CDE_JOB_URL}/resources/cd
 #let us verify that the file is indeed uploaded
 curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/resources/cde_REPORTS" | jq 
 
-#running a job to create a Create_Reports
+#creater  a job to run a Create_Reports
 curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/jobs" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"name\": \"Create_Report\", \"type\": \"spark\", \"retentionPolicy\": \"keep_indefinitely\", \"mounts\": [ { \"dirPrefix\": \"/\", \"resourceName\": \"cde_REPORTS\" } ], \"spark\": { \"file\": \"Create_Reports.py\", \"conf\": { \"spark.pyspark.python\": \"python3\" } }, \"schedule\": { \"enabled\": true, \"user\": \"vishrajagopalan\", \"cronExpression\": \"30 */1 * * *\", \"start\": \"2020-08-18\", \"end\": \"2021-08-18\" } }"
+
+#run the job
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/jobs/Create_Report/run" | jq .
 
 
 # Let us check the execution of the job
 curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/jobs?latestjob=true&filter=name%5Beq%5DCreate_Report&limit=20&offset=0&orderby=name&orderasc=true" | jq .
 
 # letg us check the job output
-curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/job-runs/<JOB_ID>/logs?type=driver%2Fstdout"
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/job-runs/155/logs?type=driver%2Fstdout"
 
+# Delete the job
+curl  -H "Authorization: Bearer ${CDE_TOKEN}" -X "DELETE"  "${CDE_TOKEN}" "${CDE_JOB_URL}/jobs/Create_Report" | jq

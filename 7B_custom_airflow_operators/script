@@ -16,7 +16,7 @@ pip install -i https://test.pypi.org/simple/ custom-airflow-operator-superellips
 # Let us create a CDE Job with this custom dag
 #step1 : Create a custom airflow python env.
 
-cde resource create --name superellipse-resource   --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
-cde resource upload --name superellipse-resource --local-path ./CDE_Setup/Dag1.py --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
-cde job create --name custom-airflow-dag-job --mount-1-resource superellipse-resource --dag-file  Dag1.py --type airflow --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+cde resource create --name superellipse-resource   --config-profile spark-330
+cde resource upload --name superellipse-resource --local-path ./CDE_Setup/Dag1.py --config-profile spark-330
+cde job create --name custom-airflow-dag-job --mount-1-resource superellipse-resource --dag-file  Dag1.py --type airflow --config-profile spark-330
 cde job run --name custom-airflow-dag-job  --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
