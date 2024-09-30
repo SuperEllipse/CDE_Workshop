@@ -1,0 +1,136 @@
+
+#Iceberg setup - ensure you are on Iceberg Spark 3 before this. 
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from datetime import datetime
+import string , random
+
+# if this fails  read here : https://iceberg.apache.org/docs/latest/spark-configuration/
+#  .config("spark.jars","/home/cdsw/lib/iceberg-spark3-runtime-0.9.1.1.13.317211.0-9.jar") \
+spark = SparkSession.builder\
+  .appName("1.1 - Ingest") \
+  .config("spark.hadoop.fs.s3a.s3guard.ddb.region", "us-east-2")\
+  .config("spark.yarn.access.hadoopFileSystems", "s3a://go01-demo/")\
+  .config("spark.sql.extensions","org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions") \
+  .config("spark.sql.catalog.spark_catalog","org.apache.iceberg.spark.SparkSessionCatalog") \
+  .config("spark.sql.catalog.spark_catalog.type","hive") \
+  .getOrCreate()
+
+  # To configure hdfs directory based caatlao 
+  # .config("spark.sql.catalog.local","org.apache.iceberg.spark.SparkCatalog") \
+  # .config("spark.sql.catalog.local.type","hadoop") \
+
+spark.sql("CREATE DATABASE IF NOT EXISTS spark_catalog.testdb")
+spark.sql("USE spark_catalog.testdb")
+spark.sql("SHOW CURRENT NAMESPACE").show()
+spark.sql("CREATE TABLE IF NOT EXISTS newtesttable (id bigint, data string) USING iceberg")
+spark.read.format("iceberg").load("spark_catalog.testdb.newtesttable.snapshots").show(20, False) # snapshopts
+spark.sql("INSERT INTO spark_catalog.testdb.newtesttable VALUES (1, 'x'), (2, 'y'), (3, 'z')")
+spark.sql("SELECT * FROM spark_catalog.testdb.newtesttable").show()
+# current date and time
+now = datetime.now()
+timestamp1 = datetime.timestamp(now)
+print("timestamp =", timestamp1)
+spark.read.option("as-of-timestamp", int(timestamp1*1000)).format("iceberg").load("spark_catalog.testdb.newtesttable").show()
+spark.sql("INSERT INTO spark_catalog.testdb.newtesttable VALUES (1, 'd'), (2, 'e'), (3, 'f')")
+spark.sql("SELECT * FROM spark_catalog.testdb.newtesttable").show()
+
+for i in range(25):
+    number = random.randint(0, 10)
+    letter = random.choice(string.ascii_letters)
+    spark.sql("INSERT INTO spark_catalog.testdb.newtesttable VALUES ({}, '{}')".format(number, letter))
+
+
+#add some more rows - switch to command line here 
+spark.read.format("iceberg").load("spark_catalog.testdb.newtesttable.snapshots").show(20, False) # snapshopts
+
+# read a specfic snapshot
+
+spark.read\
+    .option("snapshot-id", 7916848881952116340)\
+    .table("spark_catalog.testdb.newtesttable").show()
+
+#SWITCH TO COMMAND LINE HERE to show how to connect to command line 
+cde session interact --name test-cde-session --config-profile spark-330
+#drop table 
+spark.sql("drop table newtesttable")
+#drop table 
+spark.sql("drop table newtesttable")
+
+# talk about other iceberg Features
+https://iceberg.apache.org/docs/latest/evolution/#partition-evolution
+
+## Partition evolution
+spark.sql("drop table IF EXISTS  testdb.sample").show()
+spark.sql("""
+CREATE TABLE  testdb.sample ( \
+    id bigint COMMENT 'unique id', \
+    data string) \
+USING iceberg \
+""").show()
+
+
+spark.sql("""
+insert into testdb.sample(id, data) values ( 1, "parle g")
+"""
+)
+spark.sql("""
+insert into testdb.sample(id, data) values ( 2, "hersheys")
+"""
+)
+
+spark.sql("""
+ALTER TABLE testdb.sample \
+ADD COLUMNS ( \
+    catalog string, \
+	ts timestamp \
+  ) \
+""")
+spark.sql("""
+
+INSERT INTO testdb.sample(id, data,catalog, ts ) VALUES(3, 'snickers', 'chocolates', cast(date_format('2019-06-13 13:22:30.521000000', 'yyyy-MM-dd HH:mm:ss.SSS') as timestamp))
+
+"""
+)
+
+spark.sql("""
+
+ALTER TABLE testdb.sample ADD PARTITION FIELD catalog -- identity transform
+
+""")
+
+
+spark.sql("""
+ALTER TABLE testdb.sample ADD PARTITION FIELD years(ts)
+""").show()
+
+spark.sql("""
+INSERT INTO testdb.sample(id, data,catalog, ts ) VALUES(4, 'Ritters', 'chocolates', cast(date_format('2023-06-03 13:22:30.521000000', 'yyyy-MM-dd HH:mm:ss.SSS') as timestamp))
+"""
+)
+spark.sql("DESCRIBE TABLE testdb.sample").show()
+
+spark.sql("""
+SELECT * FROM testdb.sample.snapshots;
+
+""").show()
+
+#time travel 
+spark.sql("""
+SELECT * FROM testdb.sample
+VERSION AS OF 3418896396266303864
+""").show()
+
+spark.sql("""
+SELECT * FROM testdb.sample
+FOR SYSTEM_VERSION AS OF 3418896396266303864
+""").show()
+
+
+
+spark.read\
+    .option("snapshot-id", 3418896396266303864)\
+    .table("spark_catalog.testdb.sample").show()
+
+
+# Show Merge INTO if we have time

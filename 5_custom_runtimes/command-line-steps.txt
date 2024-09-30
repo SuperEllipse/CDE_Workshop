@@ -1,0 +1,25 @@
+# Cloudera Support Matrix : https://docs.cloudera.com/data-engineering/cloud/release-notes/topics/cde-dl-compatibility.html
+
+
+docker build --network=host -t superellipse/dex-spark-runtime-3.2:1.1-custom . -f Dockerfile
+docker images -a
+
+docker push superellipse/dex-spark-runtime-3.2:1.1-custom
+
+# show the output in Docker hub
+
+cde profile show-active
+export CDE_VCLUSTER_ENDPOINT=https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+
+
+cde credential create --name docker-creds-vr1 --type docker-basic --docker-server hub.docker.com --docker-username superellipse --config-profile spark-330
+
+
+#let us create a runtime image
+cde resource create --name dex-spark-runtime-custom --image superellipse/dex-spark-runtime-3.2:1.1-custom --image-engine spark3 --type custom-runtime-image --config-profile spark-330
+
+#cd /Users/vrajagopalan/Library/spark/examples/src/main/python 
+cat /Users/vrajagopalan/Library/spark/examples/src/main/python/pi.py
+cde spark submit  /Users/vrajagopalan/Library/spark/examples/src/main/python/pi.py --runtime-image-resource-name=dex-spark-runtime-custom --config-profile spark-330
+
+#show the spark submitter kubernetes logs for spark container pull 

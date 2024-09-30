@@ -1,0 +1,22 @@
+python3 -m pip install --upgrade build
+python3 -m build
+python3 -m pip install --upgrade twine
+python3 -m twine upload --repository testpypi dist/*
+username : __token__
+pypi-AgENdGVzdC5weXBpLm9yZwIkYmU2ZGRmZjEtNDQ5ZS00YWUzLWFjNzAtZTE1MzdjZmJlZmQ5AAIqWzMsIjJhNGYyY2ZjLTllNGEtNDViMi04NWM2LTIyZmE1ZjNhM2E1NyJdAAAGIDTnHBkapxZhUQJqHdNYKQK6YrvqXu5bpNAkMvEhap-6
+
+
+#test if it works locally
+pyenv virtualenvs
+pyenv activate dbt-env
+pip install -i https://test.pypi.org/simple/ custom-airflow-operator-superellipse==0.0.6
+
+
+
+# Let us create a CDE Job with this custom dag
+#step1 : Create a custom airflow python env.
+
+cde resource create --name superellipse-resource   --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+cde resource upload --name superellipse-resource --local-path ./CDE_Setup/Dag1.py --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+cde job create --name custom-airflow-dag-job --mount-1-resource superellipse-resource --dag-file  Dag1.py --type airflow --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+cde job run --name custom-airflow-dag-job  --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1

@@ -1,0 +1,12 @@
+cde job list --config-profile spark-330
+Useful URL : https://docs.cloudera.com/data-engineering/cloud/cli-access/topics/cde-cli-config-options.html
+ALTERNATELY SET 
+export CDE_VCLUSTER_ENDPOINT=https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+cde profile show-active
+cd /Users/vrajagopalan/Work/GitHub/CDE_BoI_Workshop/1A_simple-jobs_UI
+
+# we really dont need the --vcluster-endpoint here
+vrajagopalan$ cde job list --vcluster-endpoint https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+
+# let us do it without it
+cde spark submit pyspark_sql.py 

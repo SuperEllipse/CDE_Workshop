@@ -1,0 +1,49 @@
+
+
+cde job list --config-profile spark-330 # https://docs.cloudera.com/data-engineering/cloud/cli-access/topics/cde-creating-using-multiple-profiles.html
+export CDE_VCLUSTER_ENDPOINT=https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+
+Run a job from the CLI # go to the manual_jobs folder
+
+cde spark submit LC_data_exploration.py  --config-profile default-virtual-cluster
+
+# Let us create a resource
+cde resource create --name BI_my_pipeline_resource  --config-profile default-virtual-cluster
+
+#Upload Job files to the resouce
+cde resource upload --name BI_my_pipeline_resource --local-path LC_airflow_config.py --local-path LC_data_exploration.py --local-path LC_KPI_reporting.py --local-path ./LC_ml_model.py
+
+#create Data Exploration Job
+cde job create --application-file LC_data_exploration.py  --name LC_data_exploration --mount-1-resource BI_my_pipeline_resource --type spark 
+
+#check the job 
+cde job list --filter "name[rlike]LC"
+
+# run the job
+cde job run --name LC_data_exploration
+
+# check the status fied
+cde run describe --id #, where # is the job id
+
+####Review the Output: by running repeatedly
+
+cde run logs --type "driver/stdout" --id #, where # is the job id e.g. 199
+
+cde job create --application-file LC_KPI_reporting.py --name LC_KPI_reporting --mount-1-resource BI_my_pipeline_resource --type spark
+
+#change table name before this line
+cde job create --application-file LC_ml_model.py --name LC_ml_scoring --mount-1-resource BI_my_pipeline_resource --type spark
+
+#create an airflow pipeline
+cde job   create --name vish_airflow_pipeline --type airflow --dag-file LC_airflow_config.py --mount-1-resource BI_my_pipeline_resource --config-profile spark-330
+
+cde job run --name vish_airflow_pipeline --config-profile spark-330
+
+
+# check the status fied
+cde run describe --id #, where # is the job id
+
+cde run logs --show-types --id 124
+
+# go over to the Airflow UI to show how the job is executed
+# DAG is LC_customer_scoring

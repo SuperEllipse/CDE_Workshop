@@ -1,0 +1,6 @@
+# Ignore macOS system files
+.DS_Store
+1A_simple-jobs_UI_and_CLI/data/
+
+# Ignore CSV files in all subdirectories
+**/*.csv

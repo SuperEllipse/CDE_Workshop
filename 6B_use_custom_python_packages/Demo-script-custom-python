@@ -1,0 +1,30 @@
+#cde resource delete --name "custom_env_py3" --config-profile iceberg-spark3
+
+cde resource create --name custom_env_py3_2 --type python-env  --pip-repository-url "https://test.pypi.org/simple/"   --config-profile spark-330
+
+cde resource upload --name custom_env_py3_2 \
+            --local-path  requirements.txt --config-profile  spark-330
+
+#check status of the resource 
+cde resource list-events --name "custom_env_py3_2" --config-profile spark-330
+cde resource create --name my_pipeline_resource_1 --config-profile  spark-330
+cde resource upload --name my_pipeline_resource_1 --local-path use_custom_package.py  --config-profile  spark-330 
+
+
+cde job create --type spark \
+ --mount-1-resource my_pipeline_resource_1 \
+--application-file use_custom_package.py \
+--python-env-resource-name custom_env_py3_2 \
+--name custom-package-example-2 \
+--config-profile spark-330 
+
+
+cde job run --name custom-package-example-2 --config-profile  spark-330 
+
+cde run describe --id 145 --config-profile spark-330
+cde run logs --type "driver/stdout" --id 145 --config-profile spark-330
+
+## CLEAN UP
+cde job delete --name custom-package-example-2 --config-profile  spark-330 
+cde resource delete --name my_pipeline_resource_1 --config-profile  spark-330 
+cde resource delete --name custom_env_py3_2 --config-profile  spark-330 

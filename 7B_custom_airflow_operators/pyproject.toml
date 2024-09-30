@@ -1,0 +1,21 @@
+[project]
+name = "custom_airflow_operator_superellipse"
+version = "0.0.6"
+authors = [
+  { name="superellipse", email="xyz@xyz.com" },
+]
+description = "A Custom Airflow Operator Demo"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/pypa/sampleproject"
+Issues = "https://github.com/pypa/sampleproject/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,24 @@
+#Tutorial Link : https://www.cloudera.com/services-and-support/tutorials/cdp-using-cli-api-to-automate-access-to-cloudera-data-engineering.html
+#API Doc link : https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/swagger/index.html
+
+export CDE_JOB_URL="https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1"\
+export CDE_TOKEN=$(curl -u vishrajagopalan $(echo 'https://service.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/grafana/d/0Oq0WmQWk/instance-metrics?orgId=1&refresh=5s&var-virtual_cluster_name=spark-330' | cut -d'/' -f1-3 | awk '{print $1"/gateway/authtkn/knoxtoken/api/v1/token"}') | jq -r '.access_token')
+
+# Creating a resource name called cde_REPORTS
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/resources" -H "Content-Type: application/json" -d "{ \"name\": \"cde_REPORTS\"}"
+
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X PUT "${CDE_JOB_URL}/resources/cde_REPORTS/Create_Reports.py" -F 'file=@Create_Reports.py'
+
+#let us verify that the file is indeed uploaded
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/resources/cde_REPORTS" | jq 
+
+#running a job to create a Create_Reports
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/jobs" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"name\": \"Create_Report\", \"type\": \"spark\", \"retentionPolicy\": \"keep_indefinitely\", \"mounts\": [ { \"dirPrefix\": \"/\", \"resourceName\": \"cde_REPORTS\" } ], \"spark\": { \"file\": \"Create_Reports.py\", \"conf\": { \"spark.pyspark.python\": \"python3\" } }, \"schedule\": { \"enabled\": true, \"user\": \"vishrajagopalan\", \"cronExpression\": \"30 */1 * * *\", \"start\": \"2020-08-18\", \"end\": \"2021-08-18\" } }"
+
+
+# Let us check the execution of the job
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/jobs?latestjob=true&filter=name%5Beq%5DCreate_Report&limit=20&offset=0&orderby=name&orderasc=true" | jq .
+
+# letg us check the job output
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/job-runs/<JOB_ID>/logs?type=driver%2Fstdout"
+

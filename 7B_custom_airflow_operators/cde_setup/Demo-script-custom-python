@@ -1,0 +1,46 @@
+#cde resource delete --name "custom_env_py3" --config-profile iceberg-spark3
+# validate in the python3 that the package works 
+# Creating and deploying the Custom Airflow Operator
+#IMPORTANT : Part1 -- Delete the files in dist folder and upgrade version first on .toml file
+#Demo Script:
+#Delete earlier Package version in dist
+#Change the .toml file for new version
+
+
+python3 -m pip install --upgrade build
+python3 -m build
+python3 -m pip install --upgrade twine
+python3 -m twine upload --repository testpypi dist/*
+#use the user name and pwd
+username : __token__
+pypi-AgENdGVzdC5weXBpLm9yZwIkYmU2ZGRmZjEtNDQ5ZS00YWUzLWFjNzAtZTE1MzdjZmJlZmQ5AAIqWzMsIjJhNGYyY2ZjLTllNGEtNDViMi04NWM2LTIyZmE1ZjNhM2E1NyJdAAAGIDTnHBkapxZhUQJqHdNYKQK6YrvqXu5bpNAkMvEhap-6
+
+
+from custom_airflow_operator_superellipse import arithmetic_operator
+
+
+cde resource create --name custom_env_py3_2 --type python-env  --pip-repository-url "https://test.pypi.org/simple/"   
+            --local-path  requirements.txt --vcluster-endpoint https://jcxk6ghn.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
+
+
+#check status of the resource 
+cde resource list-events --name "custom_env_py3_2" --config-profile iceberg-spark3
+cde resource create --name my_pipeline_resource_1 --config-profile iceberg-spark3  
+cde resource upload --name my_pipeline_resource_1 --local-path use_custom_package.py  --config-profile iceberg-spark3 
+
+
+cde job create --type spark \
+ --mount-1-resource my_pipeline_resource_1 \
+--application-file use_custom_package.py \
+--python-env-resource-name custom_env_py3_2 \
+--name custom-package-example-2 \
+--config-profile iceberg-spark3
+
+
+cde job run --name custom-package-example-2 --config-profile iceberg-spark3
+
+
+## CLEAN UP
+cde job delete --name custom-package-example-2 --config-profile iceberg-spark3
+cde resource delete --name my_pipeline_resource_1 --config-profile iceberg-spark3 
+cde resource delete --name custom_env_py3_2 --config-profile iceberg-spark3 
