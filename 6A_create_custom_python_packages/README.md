@@ -13,8 +13,8 @@ pip install twine
 python3 -m build
 
 python3 -m twine upload --repository testpypi dist/*
-__token__
-pypi-AgENdGVzdC5weXBpLm9yZwIkYmU2ZGRmZjEtNDQ5ZS00YWUzLWFjNzAtZTE1MzdjZmJlZmQ5AAIqWzMsIjJhNGYyY2ZjLTllNGEtNDViMi04NWM2LTIyZmE1ZjNhM2E1NyJdAAAGIDTnHBkapxZhUQJqHdNYKQK6YrvqXu5bpNAkMvEhap-6
+username: __token__
+get the pypi token from Notes
 
 SHOW THE Package in Pypi : https://test.pypi.org/project/example-package-superellipse/#history
 
