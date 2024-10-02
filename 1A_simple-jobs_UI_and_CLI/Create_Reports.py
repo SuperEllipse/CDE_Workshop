@@ -48,7 +48,7 @@ spark = SparkSession \
     .getOrCreate()
 
 #A simple script that runs aggregate queries to be used for reporting purposes.
-spark.conf.set("spark.sql.legacy.allowCreatingManagedTableUsingNonemptyLocation","true")
+#spark.conf.set("spark.sql.legacy.allowCreatingManagedTableUsingNonemptyLocation","true")
 
 print(f"Running report for Jobs Retained by City")
 
