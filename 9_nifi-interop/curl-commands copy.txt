@@ -1,0 +1,41 @@
+# command to get the node details
+export WORKLOAD_ID_PWD=<cdp-workload-id>:<cdp-workload-password>
+
+# Stand Alone Airflow at localhost : 8080
+admin  password: 5Pf4364c7Bmb4ust
+
+# Get the Cluster details
+curl -s -u $WORKLOAD_ID_PWD https://your-nifi-cluster.cloudera.site/data-hub-details/cdp-proxy-api/nifi-app/nifi-api/controller/cluster | jq
+
+#THIS WORKS
+curl -s -u WORKLOAD_ID_PWD https://your-nifi-cluster.cloudera.site/data-hub-details/cdp-proxy-api/nifi-app/nifi-api/processors/f924d9d0-e1e3-3e60-94f4-32393d330acf/state
+
+
+
+cp  commodity_flow.py $AIRFLOW_HOME/dags
+ls -l $AIRFLOW_HOME/dags
+
+
+# COMMANDS TO START STOP AND QUERY THE processors
+
+
+REVISION CHECK
+export WORKLOAD_ID_PWD=vishrajagopalan:Cloudera$00
+curl -s -u $WORKLOAD_ID_PWD  https://se-indonesia-cfm1-management0.se-indon.a465-9q4k.cloudera.site/se-indonesia-cfm1/cdp-proxy-api/nifi-app/nifi-api/processors/0d082996-0192-1000-ffff-fffff4de0cfe | jq -r ".revision"
+
+
+START
+
+curl -s -u $WORKLOAD_ID_PWD  -X PUT  https://se-indonesia-cfm1-management0.se-indon.a465-9q4k.cloudera.site/se-indonesia-cfm1/cdp-proxy-api/nifi-app/nifi-api/processors/0d082996-0192-1000-ffff-fffff4de0cfe/run-status -H "Content-Type: application/json" --data-binary '{"revision":{"clientId":"c74a3773-cee5-15db-6b8c-7c5873a52dd7","version":14},"state":"RUNNING","disconnectedNodeAcknowledged": true}' --compressed | jq
+
+curl -s -u $WORKLOAD_ID_PWD  https://se-indonesia-cfm1-management0.se-indon.a465-9q4k.cloudera.site/se-indonesia-cfm1/cdp-proxy-api/nifi-app/nifi-api/processors/0d082996-0192-1000-ffff-fffff4de0cfe | jq -r ".revision"
+
+
+STOP
+
+curl -s -u $WORKLOAD_ID_PWD  -X PUT  https://se-indonesia-cfm1-management0.se-indon.a465-9q4k.cloudera.site/se-indonesia-cfm1/cdp-proxy-api/nifi-app/nifi-api/processors/0d082996-0192-1000-ffff-fffff4de0cfe/run-status -H "Content-Type: application/json" --data-binary '{"revision":{"clientId":"c74a3773-cee5-15db-6b8c-7c5873a52dd7","version":15},"state":"STOPPED","disconnectedNodeAcknowledged": true}' --compressed | jq
+
+
+STATE CHECK
+curl -s -u  $WORKLOAD_ID_PWD  https://se-indonesia-cfm1-management0.se-indon.a465-9q4k.cloudera.site/se-indonesia-cfm1/cdp-proxy-api/nifi-app/nifi-api/processors/0d11f872-0192-1000-ffff-ffff8cdff6f2/state
+

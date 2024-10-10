@@ -4,3 +4,5 @@
 
 # Ignore CSV files in all subdirectories
 **/*.csv
+6A_create_custom_python_packages/dist/*.whl
+6A_create_custom_python_packages/dist/*.gz

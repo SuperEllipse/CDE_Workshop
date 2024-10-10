@@ -21,8 +21,8 @@ cde job create --type spark \
 
 cde job run --name custom-package-example-2 --config-profile  spark-330 
 
-cde run describe --id 145 --config-profile spark-330
-cde run logs --type "driver/stdout" --id 145 --config-profile spark-330
+cde run describe --id 174 --config-profile spark-330
+cde run logs --type "driver/stdout" --id 174 --config-profile spark-330
 
 ## CLEAN UP
 cde job delete --name custom-package-example-2 --config-profile  spark-330 

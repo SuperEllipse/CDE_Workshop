@@ -1,1 +1,1 @@
-example-package-superellipse==0.2.0
+example-package-superellipse==0.2.1

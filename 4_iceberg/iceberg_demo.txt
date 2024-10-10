@@ -117,8 +117,8 @@ SELECT * FROM testdb.sample.snapshots;
 
 #time travel 
 spark.sql("""
-SELECT * FROM testdb.sample
-VERSION AS OF 3418896396266303864
+SELECT * FROM testdb.newtesttable
+VERSION AS OF 8254642051275861385|5965811027694583504
 """).show()
 
 spark.sql("""

@@ -18,3 +18,6 @@ def mul_three(number):
 
 def mul_four(number):
     return number * 4
+
+def mul_five(number):
+    return number * 5

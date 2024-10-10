@@ -1,7 +1,7 @@
 #Tutorial Link : https://www.cloudera.com/services-and-support/tutorials/cdp-using-cli-api-to-automate-access-to-cloudera-data-engineering.html
 #API Doc link : https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/swagger/index.html
 
-export CDE_JOB_URL="https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1"\
+export CDE_JOB_URL="https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1"
 export CDE_TOKEN=$(curl -u vishrajagopalan $(echo 'https://service.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/grafana/d/0Oq0WmQWk/instance-metrics?orgId=1&refresh=5s&var-virtual_cluster_name=spark-330' | cut -d'/' -f1-3 | awk '{print $1"/gateway/authtkn/knoxtoken/api/v1/token"}') | jq -r '.access_token')
 
 # Creating a resource name called cde_REPORTS
@@ -23,7 +23,7 @@ curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/jobs/Create
 curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/jobs?latestjob=true&filter=name%5Beq%5DCreate_Report&limit=20&offset=0&orderby=name&orderasc=true" | jq .
 
 # letg us check the job output
-curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/job-runs/155/logs?type=driver%2Fstdout"
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/job-runs/173/logs?type=driver%2Fstdout"
 
 # Delete the job
 curl  -H "Authorization: Bearer ${CDE_TOKEN}" -X "DELETE"  "${CDE_TOKEN}" "${CDE_JOB_URL}/jobs/Create_Report" | jq

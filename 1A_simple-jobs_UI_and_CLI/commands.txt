@@ -9,4 +9,4 @@ cd /Users/vrajagopalan/Work/GitHub/CDE_BoI_Workshop/1A_simple-jobs_UI
 vrajagopalan$ cde job list --vcluster-endpoint https://mjgln8k5.cde-ntvvr5hx.go01-dem.ylcu-atmi.cloudera.site/dex/api/v1
 
 # let us do it without it
-cde spark submit pyspark_sql.py 
+cde spark submit Create_Reports.py --config-profile spark-330

@@ -1,6 +1,6 @@
 [project]
 name = "example_package_superellipse"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
   { name="Example Author", email="author@example.com" },
 ]
